@@ -1,9 +1,8 @@
-# ExternalDNS umbrella: Pi-hole + DigitalOcean (Bitnami external-dns 7.5.6, app 0.15.0).
-# Override domainFilters, excludeDomains, provider secrets, and Pi-hole server in your values.
-defaults: &defaults
+# Baseline ExternalDNS — single provider per Helm release.
+# Instantiate twice (e.g. digitalocean + pihole) with separate values files in your private repo.
+external-dns:
   annotationFilter: ""
   clusterDomain: example.com
-  disable_openapi_validation: false
   domainFilters: [example.com]
   image:
     tag: 0.15.0-debian-12-r1
@@ -11,79 +10,18 @@ defaults: &defaults
   policy: sync
   publishInternalServices: true
   sources: [ingress]
-  wait: false
-  wait_for_jobs: false
-  replicaCount: 2
+  replicaCount: 1
   pdb:
     create: true
     minAvailable: 1
-  resources: {}
-  metrics:
-    enabled: false
-    serviceMonitor:
-      enabled: false
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: DoesNotExist
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                    - external-dns
-            topologyKey: kubernetes.io/hostname
-  tolerations:
-    - key: node-role.kubernetes.io/control-plane
-      operator: Exists
-      effect: NoSchedule
-    - key: node-role.kubernetes.io/master
-      operator: Exists
-      effect: NoSchedule
-  dnsPolicy: None
-  dnsConfig:
-    nameservers:
-      - 8.8.8.8
-      - 8.8.4.4
-digitalocean:
-  <<: *defaults
+  provider: digitalocean
   digitalocean:
     secretName: digitalocean
   excludeDomains:
     - example.com
     - '*.example.com'
-  provider: digitalocean
-  policy: sync
-pihole:
-  <<: *defaults
-  dnsConfig:
-    nameservers:
-      - 10.0.0.53
-      - 10.0.0.54
-    searches: [example.com]
-  extraEnvVarsSecret: pihole-external-dns
-  excludeDomains:
-    - example.com
-    - '*.example.com'
-    - manual.example.com
-  pihole:
-    tlsSkipVerify: true
-    server: http://10.0.0.53
-  policy: sync
-  provider: pihole
-  registry: noop
-  sources: [ingress, service]
 onepassworditem:
   enabled: true
   defaultVault: Kubernetes
   items:
     - item: digitalocean
-    - item: pihole-external-dns
