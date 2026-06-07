@@ -1,0 +1,31 @@
+apiVersion: v1
+entries:
+  external-dns:
+  - annotations:
+      category: DeveloperTools
+      images: |
+        - name: external-dns
+          image: docker.io/bitnami/external-dns:0.15.0-debian-12-r1
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-07T23:11:07.416772942Z"
+    dependencies:
+    - name: external-dns
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.5.6
+    - name: onepassworditem
+      repository: https://expectedbehaviors.github.io/OnePasswordItem-helm
+      version: 1.1.1
+    description: Bitnami external-dns wrapper with optional OnePasswordItem support.
+    digest: aec11b1a125c61be62d5aad8b83ba2143e4abb7d1e6858ea762f6badd771a997
+    home: https://bitnami.com
+    keywords:
+    - external-dns
+    - network
+    - dns
+    name: external-dns
+    urls:
+    - https://expectedbehaviors.github.io/external-dns/external-dns-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-06-07T23:11:07.411720497Z"
