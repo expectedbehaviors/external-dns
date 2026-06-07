@@ -1,0 +1,24 @@
+external-dns:
+  annotationFilter: ""
+  clusterDomain: example.com
+  domainFilters: [example.com]
+  image:
+    tag: 0.15.0-debian-12-r1
+  logLevel: info
+  policy: sync
+  publishInternalServices: true
+  sources: [ingress]
+  replicaCount: 1
+  pdb:
+    create: true
+    minAvailable: 1
+  provider: digitalocean
+  digitalocean:
+    secretName: provider-credentials
+  excludeDomains:
+    - example.com
+    - '*.example.com'
+onepassworditem:
+  enabled: false
+  defaultVault: changeme
+  items: []
