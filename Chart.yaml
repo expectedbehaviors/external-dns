@@ -1,0 +1,34 @@
+apiVersion: v2
+annotations:
+  category: DeveloperTools
+  licenses: Apache-2.0
+  images: |
+    - name: external-dns
+      image: docker.io/bitnami/external-dns:0.15.0-debian-12-r1
+appVersion: 0.15.0
+description: ExternalDNS is a Kubernetes addon that configures public DNS servers with information about exposed Kubernetes services to make them discoverable.
+home: https://bitnami.com
+icon: https://bitnami.com/assets/stacks/external-dns/img/external-dns-stack-220x234.png
+keywords:
+- external-dns
+- network
+- dns
+maintainers:
+- name: Broadcom, Inc. All Rights Reserved.
+  url: https://github.com/bitnami/charts
+name: external-dns
+sources:
+- https://github.com/bitnami/charts/tree/main/bitnami/external-dns
+version: 7.5.6
+dependencies:
+  - name: external-dns
+    alias: pihole
+    version: 7.5.6
+    repository: https://charts.bitnami.com/bitnami
+  - name: external-dns
+    alias: digitalocean
+    version: 7.5.6
+    repository: https://charts.bitnami.com/bitnami
+  - name: onepassworditem
+    version: "1.1.1"
+    repository: https://expectedbehaviors.github.io/OnePasswordItem-helm
