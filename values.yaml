@@ -1,21 +1,14 @@
 # ExternalDNS umbrella: Pi-hole + DigitalOcean (Bitnami external-dns 7.5.6, app 0.15.0).
-# Root and non-k8s records go in excludeDomains so they're never pruned.
-# Root record IP updates (e.g. public IP change): do outside ExternalDNS (Terraform, DDNS).
-#
-# Chart options: defaults apply to both providers; digitalocean/pihole override as needed.
-# Bitnami subchart supports: resources, metrics (metrics.enabled, metrics.serviceMonitor),
-# containerSecurityContext, podSecurityContext, extraArgs (e.g. enable-leader-election).
-# Future: add resource requests/limits; enable metrics + ServiceMonitor when Prometheus is available.
-#
+# Override domainFilters, excludeDomains, provider secrets, and Pi-hole server in your values.
 defaults: &defaults
   annotationFilter: ""
-  clusterDomain: expectedbehaviors.com
+  clusterDomain: example.com
   disable_openapi_validation: false
-  domainFilters: [expectedbehaviors.com]
+  domainFilters: [example.com]
   image:
-    tag: 0.15.0-debian-12-r1  # chart 7.5.6 ships 0.14.2; we pin 0.15.0 (compatible)
+    tag: 0.15.0-debian-12-r1
   logLevel: info
-  policy: sync  # both providers use sync (create/update/delete)
+  policy: sync
   publishInternalServices: true
   sources: [ingress]
   wait: false
@@ -24,9 +17,7 @@ defaults: &defaults
   pdb:
     create: true
     minAvailable: 1
-  # Optional: set requests/limits for both providers (Bitnami default is {}).
   resources: {}
-  # Optional: enable when Prometheus is available; set metrics.serviceMonitor.enabled and labels for discovery.
   metrics:
     enabled: false
     serviceMonitor:
@@ -39,7 +30,6 @@ defaults: &defaults
             matchExpressions:
               - key: node-role.kubernetes.io/control-plane
                 operator: DoesNotExist
-    # Prefer spreading external-dns pods across nodes (soft anti-affinity) for HA.
     podAntiAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
         - weight: 100
@@ -63,58 +53,30 @@ defaults: &defaults
     nameservers:
       - 8.8.8.8
       - 8.8.4.4
-# DigitalOcean: public DNS. policy=sync = create, update, AND delete records when ingress/service
-# is removed (cleanup). excludeDomains = root + manual; those are never touched.
 digitalocean:
   <<: *defaults
   digitalocean:
     secretName: digitalocean
   excludeDomains:
-    - expectedbehaviors.com
-    - '*.expectedbehaviors.com'
-    - youtrack.expectedbehaviors.com
+    - example.com
+    - '*.example.com'
   provider: digitalocean
   policy: sync
-# Pi-hole: internal DNS. policy=sync (same as DigitalOcean): create, update, AND delete when ingress/service
-# is removed. excludeDomains = root + manual; those are never touched.
 pihole:
   <<: *defaults
   dnsConfig:
     nameservers:
-      - 172.16.11.200
-      - 172.16.11.201
-    searches: [expectedbehaviors.com]
+      - 10.0.0.53
+      - 10.0.0.54
+    searches: [example.com]
   extraEnvVarsSecret: pihole-external-dns
   excludeDomains:
-    - expectedbehaviors.com
-    - '*.expectedbehaviors.com'
-    - chore-boi.expectedbehaviors.com
-    - idrac.expectedbehaviors.com
-    - ipmi-01.expectedbehaviors.com
-    - ipmi-02.expectedbehaviors.com
-    - ipmi-03.expectedbehaviors.com
-    - ipmi-04.expectedbehaviors.com
-    - jacobs-phone.expectedbehaviors.com
-    - k8s-supermicro-node-01-01.expectedbehaviors.com
-    - k8s-supermicro-node-01-02.expectedbehaviors.com
-    - k8s-supermicro-node-01.expectedbehaviors.com
-    - k8s-supermicro-node-02-01.expectedbehaviors.com
-    - k8s-supermicro-node-02-02.expectedbehaviors.com
-    - k8s-supermicro-node-02.expectedbehaviors.com
-    - k8s-supermicro-node-03-01.expectedbehaviors.com
-    - k8s-supermicro-node-03-02.expectedbehaviors.com
-    - k8s-supermicro-node-03.expectedbehaviors.com
-    - k8s-supermicro-node-04-01.expectedbehaviors.com
-    - k8s-supermicro-node-04-02.expectedbehaviors.com
-    - k8s-supermicro-node-04.expectedbehaviors.com
-    - ns1.expectedbehaviors.com
-    - ns2.expectedbehaviors.com
-    - pihole-01.expectedbehaviors.com
-    - pihole-02.expectedbehaviors.com
-    - youtrack.expectedbehaviors.com
+    - example.com
+    - '*.example.com'
+    - manual.example.com
   pihole:
     tlsSkipVerify: true
-    server: http://172.16.11.200
+    server: http://10.0.0.53
   policy: sync
   provider: pihole
   registry: noop
