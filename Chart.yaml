@@ -6,7 +6,7 @@ annotations:
     - name: external-dns
       image: docker.io/bitnami/external-dns:0.15.0-debian-12-r1
 appVersion: 0.15.0
-description: ExternalDNS wrapper (single provider per release). Instantiate twice with different values for multi-provider setups.
+description: Bitnami external-dns wrapper with optional OnePasswordItem support.
 home: https://bitnami.com
 keywords:
   - external-dns

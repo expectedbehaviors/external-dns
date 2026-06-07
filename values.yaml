@@ -1,5 +1,3 @@
-# Baseline ExternalDNS — single provider per Helm release.
-# Instantiate twice (e.g. digitalocean + pihole) with separate values files in your private repo.
 external-dns:
   annotationFilter: ""
   clusterDomain: example.com
@@ -16,12 +14,11 @@ external-dns:
     minAvailable: 1
   provider: digitalocean
   digitalocean:
-    secretName: digitalocean
+    secretName: provider-credentials
   excludeDomains:
     - example.com
     - '*.example.com'
 onepassworditem:
-  enabled: true
-  defaultVault: Kubernetes
-  items:
-    - item: digitalocean
+  enabled: false
+  defaultVault: changeme
+  items: []
